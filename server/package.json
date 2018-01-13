@@ -1,0 +1,26 @@
+{
+  "name": "bitrader",
+  "version": "1.0.0",
+  "description": "Crypto trader bot",
+  "main": "dist/app.js",
+  "dependencies": {
+    "@types/node": "9.3.0",
+    "ccxt": "1.10.628",
+    "colors": "1.1.2",
+    "express": "4.16.2",
+    "node-bittrex-api": "0.8.1"
+  },
+  "devDependencies": {
+    "typescript": "2.6.2"
+  },
+  "scripts": {
+    "start": "tsc -w",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Decent <decent@decent.ch> (https://decent.ch/)",
+  "license": "ISC",
+  "engines": {
+    "node": ">=4.0.0"
+  }
+}
