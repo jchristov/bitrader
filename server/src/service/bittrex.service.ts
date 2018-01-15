@@ -1,13 +1,35 @@
 import * as bittrex from 'node-bittrex-api';
-// import * as request from 'request';
-import { TraderService, Exchange } from './traderService';
+import {ErrorTraderService, Exchange, Ticker, TraderService} from './traderService';
+import {Http as http} from './http.service';
 
 const apiKey = '559c7f63912b431c940cc1945cf57f8b';
 const apiSecret = '236174da16934089929e842cac450514';
 
-export class Bittrex extends TraderService {
-    getTicker(exchange: Exchange) {
-        
+export class BittrexService extends TraderService {
+    private _serviceTitle = 'bittrex';
+    private _baseUrl = 'https://bittrex.com/api/v1.1';
+    private _getTicker = '/public/getticker';
+
+    public get serviceTitle(): string {
+        return this._serviceTitle;
+    }
+
+    getTicker(exchange: Exchange = null): Promise<Ticker> {
+        return new Promise((resolve, reject) => {
+            if (!exchange) {
+                exchange = new Exchange('BTC', 'ETH');
+            }
+            const url = `${this._baseUrl}${this._getTicker}?market=${exchange.symbol}`;
+            http.get(url)
+                .then(ticker => {
+                    const tick = new Ticker(ticker.result.Ask, ticker.result.Bid, ticker.result.Last);
+                    resolve(tick);
+                })
+                .catch(err => {
+                    reject(new Error(ErrorTraderService.getTickerFailed));
+                });
+
+        })
     }
 }
 
@@ -35,7 +57,7 @@ export namespace BittrexService {
 
     let minuteAverage = infinity;
 
-    export async function submit() { 
+    export async function submit() {
         // bittrex.websockets.client(function() {
         //     console.log('Websocket connected');
         //     bittrex.websockets.subscribe(['BTC-XRP'], function(data) {
@@ -47,24 +69,24 @@ export namespace BittrexService {
         //       }
         //     });
         //   });
-    
+
         const balance = await getBalance();
         console.log(balance);
         console.log(typeof balance);
-    
-          bittrex.websockets.listen(function(data, client) {
+
+        bittrex.websockets.listen(function (data, client) {
             if (data.M === 'updateSummaryState') {
-              data.A.forEach(function(data_for) {
-                data_for.Deltas.forEach(function(marketsDelta) {
-                    if (marketsDelta.MarketName === 'BTC-ETH') {
-    
-                        checkValue(marketsDelta.Last);
-                        console.log('Ticker Update for '+ marketsDelta.MarketName, marketsDelta.Last);
-                    }
+                data.A.forEach(function (data_for) {
+                    data_for.Deltas.forEach(function (marketsDelta) {
+                        if (marketsDelta.MarketName === 'BTC-ETH') {
+
+                            checkValue(marketsDelta.Last);
+                            console.log('Ticker Update for ' + marketsDelta.MarketName, marketsDelta.Last);
+                        }
+                    });
                 });
-              });
             }
-          });
+        });
     }
 
     function percent(val: number, initValue: number): number {
@@ -95,7 +117,7 @@ export namespace BittrexService {
         console.log(`Initial Account: ${beginAmount} BTC`);
         console.log(`Bougth ETH: ${boughtAmount} ETH\n`);
     }
-    
+
     function checkValue(value: number) {
         console.log(`Actual: ${value}`);
 
@@ -116,10 +138,10 @@ export namespace BittrexService {
                 }
 
                 if (topGain < 0 && overallGain > 0) {
-                    if ( (overallGain + topGain) < overallGain / 2 ) {
+                    if ((overallGain + topGain) < overallGain / 2) {
                         sell(value);
                         return;
-                    } 
+                    }
                     // else {
                     //     topValue = value; // reclasificate value to top, if overall gain is +, but topGain -, and loss is less than 1/2
                     // }
@@ -132,13 +154,13 @@ export namespace BittrexService {
                 buy(value);
             }
             topValue = value;
-        }    
+        }
     }
 
     async function getBalance(): Promise<any> {
         return new Promise((resolve, reject) => {
             // data.result.Available
-            bittrex.getbalance({ currency: 'DCT' }, (data, err) => {
+            bittrex.getbalance({currency: 'DCT'}, (data, err) => {
                 if (err) {
                     console.log(err);
                     reject(err);
@@ -159,9 +181,9 @@ export namespace BittrexService {
 
     export function cyclicCheck() {
 
-        const coinInteval = setInterval(async () => {            
+        const coinInteval = setInterval(async () => {
             // to be sure to start with + gain, check every 10min if gain is +
-            bittrex.getticker({ market: 'BTC-ETH' }, (ticker) => {
+            bittrex.getticker({market: 'BTC-ETH'}, (ticker) => {
                 console.log(`${new Date().toTimeString()} => ${ticker.result.Last}`);
                 if (minuteAverage === infinity) {
                     minuteAverage = ticker.result.Last;
@@ -175,14 +197,14 @@ export namespace BittrexService {
                     } else {
                         minuteAverage = ticker.result.Last
                     }
-                    
+
                 }
             });
         }, 1000 * 60 * refreshRate);
     }
-    
+
     function getTicker() {
-        bittrex.getticker({ market: 'BTC-ETH' }, (ticker) => {
+        bittrex.getticker({market: 'BTC-ETH'}, (ticker) => {
             if (ticker.result) {
                 checkValue(ticker.result.Last);
             }
@@ -223,7 +245,7 @@ export namespace BittrexService {
     //             }
     //             resolve(body);
     //         })
-            
+
     //     });
     // }
 }

@@ -1,5 +1,8 @@
 import { TraderService } from '../service/traderService';
 import { Account } from '../model/account';
+import { TradingStrategy } from './strategy/strategy';
+import { CustomTradingStrategy } from './strategy/customStrategy';
+
 export interface HistoryRecord {
     value: number;
     growth: number;
@@ -25,11 +28,21 @@ export class TradingSession {
 
 export class Trader {
     private _traderService: TraderService;
-    private _session: TradingSession
+    private _session: TradingSession;
     private _account: Account;
+    private _strategy: TradingStrategy;
 
     constructor(traderService: TraderService, account: Account) {
         this._traderService = traderService;
+        this._strategy = new CustomTradingStrategy();
+    }
+
+    getTicker(): Promise<any> {
+        return this._traderService.getTicker()
+    }
+
+    setStrategy(strategy: TradingStrategy) {
+        this._strategy = strategy;
     }
 
 }

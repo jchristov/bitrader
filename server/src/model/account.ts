@@ -3,4 +3,8 @@ export class Account {
     public get balance(): number {
         return this._balance;
     }
+
+    constructor(balance: number) {
+        this._balance = balance;
+    }
 }
