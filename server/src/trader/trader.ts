@@ -1,7 +1,7 @@
 import { TraderService } from '../service/traderService';
 import { Account } from '../model/account';
-import { TradingStrategy } from './strategy/strategy';
-import { CustomTradingStrategy } from './strategy/customStrategy';
+import { TradingStrategy } from '../strategy/strategy';
+import { CustomTradingStrategy } from '../strategy/customStrategy';
 
 export interface HistoryRecord {
     value: number;
@@ -9,20 +9,23 @@ export interface HistoryRecord {
 
 }
 
+export interface TraderConfig {
+    deposit: number,
+    currency: string,
+    refreshRate?: number
+    strategy?: TradingStrategy
+}
+
 export class TradingSession {
     private _initialDeposit: number;
     private _history: Array<HistoryRecord>;
-    private _buyThreshold: number;
-    private _sellThreshold: number;
     private _currency: string;
     private _refreshRate: number;
 
-    constructor(deposit: number, currency: string, buyThreshold: number, sellThreshold: number, refreshRate: number = 30) {
-        this._initialDeposit = deposit;
-        this._buyThreshold = buyThreshold;
-        this._sellThreshold = sellThreshold;
-        this._refreshRate = refreshRate;
-        this._currency = currency;
+    constructor(config: TraderConfig) {
+        this._initialDeposit = config.deposit;
+        this._refreshRate = config.refreshRate | 30;
+        this._currency = config.currency;
     }
 }
 

@@ -1,0 +1,1 @@
+// TODO: data loading from markets and storing in DB for analyze purposes

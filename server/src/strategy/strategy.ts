@@ -1,4 +1,4 @@
-import {Ticker} from "../../service/traderService";
+import {Ticker} from "../service/traderService";
 
 export enum TradeCommand {
     buy,

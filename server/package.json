@@ -8,11 +8,14 @@
     "ccxt": "1.10.628",
     "colors": "1.1.2",
     "express": "4.16.2",
-    "node-bittrex-api": "0.8.1"
+    "node-bittrex-api": "0.8.1",
+    "technicalindicators": "1.0.21",
+    "trendyways": "0.4.1"
   },
   "devDependencies": {
     "typescript": "2.6.2"
   },
+  "repository": "https://github.com/didinozka/bitrader",
   "scripts": {
     "start": "tsc -w",
     "build": "tsc",
