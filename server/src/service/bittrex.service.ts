@@ -1,12 +1,14 @@
 import * as bittrex from 'node-bittrex-api';
 // import * as request from 'request';
-import { TraderService } from './traderService';
+import { TraderService, Exchange } from './traderService';
 
 const apiKey = '559c7f63912b431c940cc1945cf57f8b';
 const apiSecret = '236174da16934089929e842cac450514';
 
 export class Bittrex extends TraderService {
-
+    getTicker(exchange: Exchange) {
+        
+    }
 }
 
 export namespace BittrexService {
